@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1A2B</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input {
+            margin: 10px 0;
+            padding: 8px;
+            width: 150px;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .results {
+            margin-top: 20px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9; 
+        }
+
+        .error {
+            color: red;
+        }
+
+        #history {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #history li {
+            margin-bottom: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>113306054_HW6_1A2B</h1>
+    <div>
+        <input type="text" id="guess" placeholder="請輸入4個不重複的字" maxlength="4">
+        <button onclick="submitGuess()">猜!</button>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <div class="results">
+        <h2>遊戲紀錄：</h2>
+        <ul id="history"></ul>
+    </div>
+    <script>
+        let secretNumber = generateSecretNumber();
+        let attempts = 0;
+
+        function generateSecretNumber(){
+            const digits = Array.from({length: 10}, (_, i) => i); //[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            const secret = [];
+            while(secret.length < 4){
+                const index = Math.floor(Math.random() * digits.length);
+                secret.push(digits.splice(index, 1)[0]);
+            }
+            return secret.join('');
+        }
+
+        function validateInput(input){
+            if(input.length !== 4)return "輸入有誤! 請輸入 4 位數字!";
+            if (!/^\d+$/.test(input)) return "輸入有誤! 輸入只能是數字！";
+            if (new Set(input).size !== 4) return "輸入的數字不能重複！";
+            return null;
+        }
+
+        function calculateResult(input){
+            let A = 0, B = 0;
+            for(let i = 0; i <4; i++){
+                if(input[i] === secretNumber[i]) A++;
+                else if (secretNumber.includes(input[i])) B++;
+            }
+            return `${A}A${B}B`;
+        }
+
+        function submitGuess(){
+            const guess = document.getElementById('guess').value;
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = '';
+
+            const errorMessage = validateInput(guess);
+            if(errorMessage){
+                errorElement.textContent = errorMessage;
+                return;
+            }
+
+            attempts++;
+            const result = calculateResult(guess);
+
+            const historyElement = document.getElementById('history');
+            const newEntry = document.createElement('li');
+            newEntry.textContent = `第${attempts}次: ${guess} -> ${result}`;
+            historyElement.appendChild(newEntry);
+
+            if (result === '4A0B') {
+            alert(`答對了！你總共猜了 ${attempts} 次。`);
+            }
+
+            document.getElementById('guess').value = '';
+        }
+
+        console.log("秘密數字 (供開發用):", secretNumber);
+    </script>
+</body> 
+</html>
